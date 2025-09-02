@@ -1,6 +1,7 @@
 package br.com.alura.screenmatch.desafios;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @FunctionalInterface
 interface Multiplicacao {
@@ -79,56 +80,56 @@ public class Desafios {
 //            System.out.println(e.getMessage());
 //        }
 
-        List<Integer> numeros = Arrays.asList(1, 2, 3, 4, 5, 6);
-        numeros.stream()
-                .filter(n -> n % 2 == 0)
-                .forEach(System.out::println);
-
-        List<String> palavras = Arrays.asList("java", "stream", "lambda");
-        palavras.stream()
-                .map(String::toUpperCase)
-                .forEach(System.out::println);
-
-        List<Integer> numeros2 = Arrays.asList(1, 2, 3, 4, 5, 6);
-
-        List<Integer> numerosMultiplicados = numeros2.stream()
-                .filter(n -> n % 2 != 0)
-                .map(n -> n * 2)
-                .toList();
-        System.out.println(numerosMultiplicados);
-
-        List<String> palavras2 = Arrays.asList("apple", "banana", "apple", "orange", "banana");
-        palavras2.stream()
-                .distinct()
-                .forEach(System.out::println);
-
-        List<List<Integer>> listaDeNumeros = Arrays.asList(
-                Arrays.asList(1, 2, 3, 4),
-                Arrays.asList(5, 6, 7, 8),
-                Arrays.asList(9, 10, 11, 12)
-        );
-        List<Integer> numerosPrimos = listaDeNumeros.stream()
-                .flatMap(Collection::stream)
-                .filter(n -> {
-                    if (n <= 1) return false;
-                    for (int i = 2; i * i <= n; i++) {
-                        if (n % i == 0) return false;
-                    }
-                    return true;
-                }).toList();
-        System.out.println(numerosPrimos);
-
-        List<Pessoa> pessoas = Arrays.asList(
-                new Pessoa("Alice", 22),
-                new Pessoa("Bob", 17),
-                new Pessoa("Charlie", 19)
-        );
-
-        pessoas.stream()
-                .filter(p -> p.getIdade() >= 18)
-                .map(Pessoa::getNome)
-                .sorted()
-                .forEach(System.out::println);
+//        List<Integer> numeros = Arrays.asList(1, 2, 3, 4, 5, 6);
+//        numeros.stream()
+//                .filter(n -> n % 2 == 0)
+//                .forEach(System.out::println);
+//
+//        List<String> palavras = Arrays.asList("java", "stream", "lambda");
+//        palavras.stream()
+//                .map(String::toUpperCase)
+//                .forEach(System.out::println);
+//
+//        List<Integer> numeros2 = Arrays.asList(1, 2, 3, 4, 5, 6);
+//
+//        List<Integer> numerosMultiplicados = numeros2.stream()
+//                .filter(n -> n % 2 != 0)
+//                .map(n -> n * 2)
+//                .toList();
+//        System.out.println(numerosMultiplicados);
+//
+//        List<String> palavras2 = Arrays.asList("apple", "banana", "apple", "orange", "banana");
+//        palavras2.stream()
+//                .distinct()
+//                .forEach(System.out::println);
+//
+//        List<List<Integer>> listaDeNumeros = Arrays.asList(
+//                Arrays.asList(1, 2, 3, 4),
+//                Arrays.asList(5, 6, 7, 8),
+//                Arrays.asList(9, 10, 11, 12)
+//        );
+//        List<Integer> numerosPrimos = listaDeNumeros.stream()
+//                .flatMap(Collection::stream)
+//                .filter(n -> {
+//                    if (n <= 1) return false;
+//                    for (int i = 2; i * i <= n; i++) {
+//                        if (n % i == 0) return false;
+//                    }
+//                    return true;
+//                }).toList();
+//        System.out.println(numerosPrimos);
+//
+//        List<Pessoa> pessoas = Arrays.asList(
+//                new Pessoa("Alice", 22),
+//                new Pessoa("Bob", 17),
+//                new Pessoa("Charlie", 19)
+//        );
+//
+//        pessoas.stream()
+//                .filter(p -> p.getIdade() >= 18)
+//                .map(Pessoa::getNome)
+//                .sorted()
+//                .forEach(System.out::println);
         List<Produto> produtos = Arrays.asList(
                 new Produto("Smartphone", 800.0, "Eletrônicos"),
                 new Produto("Notebook", 1500.0, "Eletrônicos"),
@@ -138,18 +139,56 @@ public class Desafios {
                 new Produto("Mesa", 700.0, "Móveis")
         );
 
-        List<Produto> produtosEletronicos1000 = produtos.stream()
-                .filter(p -> p.getCategoria().equals("Eletrônicos"))
-                .filter(p -> p.getPreco() < 1000.0)
-                .sorted(Comparator.comparing(Produto::getPreco))
-                .toList();
-        System.out.println(produtosEletronicos1000);
+        Map<String, List<Produto>> agrupamentoProdutos = produtos.stream()
+                .collect(Collectors.groupingBy(Produto::getCategoria));
+        System.out.println(agrupamentoProdutos);
 
-        produtos.stream()
-                .filter(p -> p.getCategoria().equals("Eletrônicos"))
-                .sorted(Comparator.comparing(Produto::getPreco))
-                .limit(3)
-                .forEach(System.out::println);
+        Map<String, Long> quantidadePorCategoria = produtos.stream()
+                .collect(Collectors.groupingBy(Produto::getCategoria, Collectors.counting()));
+        System.out.println(quantidadePorCategoria);
+
+        Map<String, Optional<Produto>> produtoMaisCaro = produtos.stream()
+                .collect(Collectors.groupingBy(Produto::getCategoria,
+                        Collectors.maxBy(Comparator.comparing(Produto::getPreco))));
+        System.out.println(produtoMaisCaro);
+
+        Map<String, Double> somaTotalProdutos = produtos.stream()
+                .collect(Collectors.groupingBy(Produto::getCategoria, Collectors.summingDouble(Produto::getPreco)));
+        System.out.println(somaTotalProdutos);
+//
+//        List<Produto> produtosEletronicos1000 = produtos.stream()
+//                .filter(p -> p.getCategoria().equals("Eletrônicos"))
+//                .filter(p -> p.getPreco() < 1000.0)
+//                .sorted(Comparator.comparing(Produto::getPreco))
+//                .toList();
+//        System.out.println(produtosEletronicos1000);
+//
+//        produtos.stream()
+//                .filter(p -> p.getCategoria().equals("Eletrônicos"))
+//                .sorted(Comparator.comparing(Produto::getPreco))
+//                .limit(3)
+//                .forEach(System.out::println);
+
+        List<Integer> numeros = Arrays.asList(10, 20, 30, 40, 50);
+        Optional<Integer> max = numeros.stream()
+                .max(Integer::compare);
+        max.ifPresent(System.out::println);
+
+        List<String> palavras = Arrays.asList("java", "stream", "lambda", "code");
+        Map<Integer, List<String>> agrupamento = palavras.stream()
+                .collect(Collectors.groupingBy(String::length));
+        System.out.println(agrupamento);
+
+        List<String> nomes = Arrays.asList("Alice", "Bob", "Charlie");
+        String agrupamentoDeDados = nomes.stream().collect(Collectors.joining(", "));
+        System.out.println(agrupamentoDeDados);
+
+        List<Integer> numeros2 = Arrays.asList(1, 2, 3, 4, 5, 6);
+        Integer somaDosQuadradosDosNumerosPares = numeros2.stream().filter(n -> n % 2 == 0).map(n -> n * n).mapToInt(Integer::intValue).sum();
+        System.out.println(somaDosQuadradosDosNumerosPares);
+
+
+
     }
 
 
